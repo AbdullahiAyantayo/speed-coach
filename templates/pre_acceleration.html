@@ -1,0 +1,145 @@
+<!--
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Acceleration Analysis</title>
+</head>
+<body>
+    <h1>Pre-Acceleration Analysis</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <br>
+    <button id="start-recording">Start Recording</button>
+    <button id="stop-recording" disabled>Stop Recording</button>
+    <br><br>
+    <form id="upload-form" action="/pre_acceleration" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="video_data" id="video_data">
+        <button type="submit" id="upload-button" disabled>Analyze</button>
+    </form>
+
+    <script>
+        const videoElement = document.getElementById('video');
+        const startButton = document.getElementById('start-recording');
+        const stopButton = document.getElementById('stop-recording');
+        const uploadButton = document.getElementById('upload-button');
+        const videoDataInput = document.getElementById('video_data');
+
+        let mediaRecorder;
+        let recordedBlobs;
+
+        startButton.addEventListener('click', async () => {
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            recordedBlobs = [];
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            videoElement.srcObject = stream;
+
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = event => {
+                if (event.data && event.data.size > 0) {
+                    recordedBlobs.push(event.data);
+                }
+            };
+            mediaRecorder.start();
+        });
+
+        stopButton.addEventListener('click', () => {
+            stopButton.disabled = true;
+            startButton.disabled = false;
+            uploadButton.disabled = false;
+            mediaRecorder.stop();
+
+            const superBuffer = new Blob(recordedBlobs, { type: 'video/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(superBuffer);
+            reader.onloadend = () => {
+                videoDataInput.value = reader.result;
+            };
+        });
+    </script>
+</body>
+</html>
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Acceleration Analysis</title>
+</head>
+<body>
+    <!-- Main heading of the page -->
+    <h1>Pre-Acceleration Analysis</h1>
+
+    <!-- Video element to display the webcam feed -->
+    <video id="video" width="640" height="480" autoplay></video>
+    <br>
+
+    <!-- Buttons to start and stop the video recording -->
+    <button id="start-recording">Start Recording</button>
+    <button id="stop-recording" disabled>Stop Recording</button>
+    <br><br>
+
+    <!-- Form to upload the recorded video data for analysis -->
+    <form id="upload-form" action="/pre_acceleration" method="post" enctype="multipart/form-data">
+        <!-- Hidden input to store the base64 encoded video data -->
+        <input type="hidden" name="video_data" id="video_data">
+        <!-- Button to submit the form and trigger the analysis -->
+        <button type="submit" id="upload-button" disabled>Analyze</button>
+    </form>
+
+    <!-- JavaScript to handle video recording and form submission -->
+    <script>
+        // References to the video element and buttons
+        const videoElement = document.getElementById('video');
+        const startButton = document.getElementById('start-recording');
+        const stopButton = document.getElementById('stop-recording');
+        const uploadButton = document.getElementById('upload-button');
+        const videoDataInput = document.getElementById('video_data');
+
+        let mediaRecorder;
+        let recordedBlobs;
+
+        // Start recording when the start button is clicked
+        startButton.addEventListener('click', async () => {
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            recordedBlobs = [];
+
+            // Access the webcam and start the video feed
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            videoElement.srcObject = stream;
+
+            // Initialize the MediaRecorder to record the video stream
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = event => {
+                if (event.data && event.data.size > 0) {
+                    recordedBlobs.push(event.data);
+                }
+            };
+            mediaRecorder.start();
+        });
+
+        // Stop recording when the stop button is clicked
+        stopButton.addEventListener('click', () => {
+            stopButton.disabled = true;
+            startButton.disabled = false;
+            uploadButton.disabled = false;
+            mediaRecorder.stop();
+
+            // Convert the recorded video data to a Blob and encode it as base64
+            const superBuffer = new Blob(recordedBlobs, { type: 'video/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(superBuffer);
+            reader.onloadend = () => {
+                videoDataInput.value = reader.result; // Store the base64 data in the hidden input field
+            };
+        });
+    </script>
+</body>
+</html>

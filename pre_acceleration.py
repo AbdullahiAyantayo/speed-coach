@@ -3,9 +3,9 @@ import mediapipe as mp
 import numpy as np
 import os
 
-# Initialize MediaPipe Pose model
+# Initialize MediaPipe Pose model with higher accuracy settings
 mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
+pose = mp_pose.Pose(static_image_mode=False, model_complexity=2, enable_segmentation=False, min_detection_confidence=0.5)
 
 # Function to calculate the angle between three points
 def calculate_angle(a, b, c):
